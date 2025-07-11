@@ -57,9 +57,8 @@ Click "Save and Continue"
 2. In the popup, search for or scroll to find:
    - ✅ `https://www.googleapis.com/auth/drive.readonly` 
      - Look for "See and download all your Google Drive files"
-   - ✅ `https://www.googleapis.com/auth/drive.metadata.readonly`
-     - Look for "See information about your Google Drive files"
-3. Check both boxes
+     - **Note: This single scope includes access to shared drives**
+3. Check the box
 4. Click "UPDATE" at the bottom of the popup
 5. Click "SAVE AND CONTINUE"
 
@@ -123,8 +122,7 @@ Visit `http://localhost:5173` and test the Google Drive integration!
 ## Google Drive API Scopes
 
 ### Required Scopes
-- `https://www.googleapis.com/auth/drive.readonly` - Read access to files
-- `https://www.googleapis.com/auth/drive.metadata.readonly` - Read file metadata
+- `https://www.googleapis.com/auth/drive.readonly` - Full read access to all files including shared drives
 
 ### Optional Scopes (for future features)
 - `https://www.googleapis.com/auth/drive.file` - Access to files created by the app

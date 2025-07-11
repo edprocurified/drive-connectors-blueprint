@@ -10,6 +10,23 @@ export interface GoogleDriveFile {
   webViewLink?: string
   webContentLink?: string
   iconLink?: string
+  shared?: boolean
+  sharedWithMeTime?: string
+}
+
+export interface SharedDrive {
+  id: string
+  name: string
+}
+
+export type DriveSection = 'my-drive' | 'shared-with-me' | 'shared-drives' | 'recent'
+
+export interface NavigationState {
+  section: DriveSection
+  folderId: string
+  folderName: string
+  driveId?: string
+  driveName?: string
 }
 
 export interface MicrosoftDriveFile {

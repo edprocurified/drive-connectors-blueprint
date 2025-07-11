@@ -1,4 +1,5 @@
 import { Client } from '@microsoft/microsoft-graph-client'
+import JSZip from 'jszip'
 import { MicrosoftDriveFile } from '../types'
 
 export class MicrosoftGraphService {
@@ -83,6 +84,71 @@ export class MicrosoftGraphService {
       return response as MicrosoftDriveFile
     } catch (error) {
       console.error('Error getting file metadata:', error)
+      throw error
+    }
+  }
+
+  async downloadMultipleFiles(files: MicrosoftDriveFile[], _zipName: string, onProgress?: (current: number, total: number) => void) {
+    const zip = new JSZip()
+    let completed = 0
+    let totalFiles = 0
+
+    // First, count total files (including nested ones)
+    const countFiles = async (items: MicrosoftDriveFile[]): Promise<number> => {
+      let count = 0
+      for (const item of items) {
+        if (item.folder) {
+          const { files: folderFiles } = await this.listFiles(item.id)
+          count += await countFiles(folderFiles)
+        } else {
+          count++
+        }
+      }
+      return count
+    }
+
+    totalFiles = await countFiles(files)
+
+    // Recursively download files maintaining folder structure
+    const downloadRecursively = async (items: MicrosoftDriveFile[], basePath: string = '') => {
+      for (const item of items) {
+        try {
+          if (item.folder) {
+            // Create folder in zip and download its contents
+            const folderPath = basePath ? `${basePath}/${item.name}` : item.name
+            const { files: folderFiles } = await this.listFiles(item.id)
+            await downloadRecursively(folderFiles, folderPath)
+          } else {
+            // Download file
+            const blob = await this.downloadFile(item.id)
+            const filePath = basePath ? `${basePath}/${item.name}` : item.name
+            zip.file(filePath, blob)
+            completed++
+            onProgress?.(completed, totalFiles)
+          }
+        } catch (error) {
+          console.warn(`Failed to download ${item.name}:`, error)
+          // Continue with other files even if one fails
+        }
+      }
+    }
+
+    await downloadRecursively(files)
+    const zipBlob = await zip.generateAsync({ type: 'blob' })
+    return zipBlob
+  }
+
+  async downloadFolderContents(folderId: string, folderName: string, onProgress?: (current: number, total: number) => void) {
+    try {
+      const { files } = await this.listFiles(folderId)
+      
+      if (files.length === 0) {
+        throw new Error('Folder is empty')
+      }
+
+      return await this.downloadMultipleFiles(files, `${folderName}.zip`, onProgress)
+    } catch (error) {
+      console.error('Error downloading folder contents:', error)
       throw error
     }
   }

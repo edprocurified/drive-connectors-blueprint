@@ -5,8 +5,21 @@ A React web application that allows users to connect to Google Drive or Microsof
 ## Features
 
 - **Multi-provider Authentication**: Support for Google Drive and Microsoft OneDrive/SharePoint
-- **File Browser**: Navigate folders and view file metadata
-- **File Downloads**: Download files directly from the cloud storage
+- **Advanced File Browser**: Navigate folders, view metadata, and access shared drives
+- **Enhanced Navigation**: 
+  - My Drive, Shared with me, Recent files, and Shared drives (Google)
+  - Expandable sidebar with drive sections
+  - Breadcrumb navigation with clickable path
+- **Universal Selection System**: 
+  - Checkbox selection for both files and folders
+  - "Select All" functionality for bulk operations
+  - Mixed selection of files and folders
+- **Hierarchical Zip Downloads**: 
+  - Download selected files and folders as organized zip files
+  - Maintains original folder structure in zip archives
+  - Recursive folder downloading with progress tracking
+  - Works with any combination of files and folders
+- **Real-time Progress**: Visual progress bars for zip creation and downloads
 - **Responsive UI**: Clean, modern interface built with Tailwind CSS
 
 ## Tech Stack
@@ -16,7 +29,9 @@ A React web application that allows users to connect to Google Drive or Microsof
 - Google Drive API v3
 - Microsoft Graph API
 - MSAL (Microsoft Authentication Library)
-- Tailwind CSS
+- JSZip for client-side zip file creation
+- Tailwind CSS for styling
+- Lucide React for icons
 
 ## Quick Start
 
@@ -72,10 +87,42 @@ Visit `http://localhost:5173` and choose your cloud storage provider.
 
 ## How It Works
 
-1. **Authentication**: Users choose Google or Microsoft and complete OAuth flow
-2. **File Browsing**: App fetches and displays files/folders from the connected drive
-3. **Navigation**: Click folders to navigate, use breadcrumb to go back
-4. **Downloads**: Click download icon to save files locally
+### Authentication & Access
+1. **Provider Selection**: Choose between Google Drive or Microsoft OneDrive/SharePoint
+2. **OAuth Flow**: Secure authentication with read-only permissions
+3. **Drive Access**: Automatically access personal files, shared files, and organizational drives
+
+### Navigation & Browsing
+4. **Sidebar Navigation**: Switch between different file views:
+   - **My Drive**: Personal files and folders
+   - **Shared with me**: Files others have shared with you
+   - **Recent**: Recently accessed files across all drives
+   - **Shared drives**: Organizational shared drives (Google Workspace)
+5. **File Explorer**: Click folders to navigate, use breadcrumb for quick navigation
+6. **File Metadata**: View file sizes, modification dates, and file types
+
+### Selection & Downloads
+7. **Universal Selection**: Check boxes next to any files or folders
+8. **Bulk Operations**: Select multiple items across different types
+9. **Hierarchical Downloads**: 
+   - Selected items download as a single zip file
+   - Original folder structure preserved in zip
+   - Recursive downloading of entire folder trees
+   - Real-time progress tracking for large downloads
+
+### Example Zip Structure
+```
+your-download.zip/
+├── Document.pdf                 (selected file)
+├── Photos/                      (selected folder)
+│   ├── vacation.jpg
+│   └── family/
+│       └── reunion.png
+└── Reports/                     (selected folder)
+    ├── Q1-report.docx
+    └── data/
+        └── analytics.xlsx
+```
 
 ## Security
 
@@ -84,9 +131,32 @@ Visit `http://localhost:5173` and choose your cloud storage provider.
 - Read-only permissions by default
 - No server component required
 
+## Key Features in Detail
+
+### Universal Selection System
+- **Checkbox Interface**: Every file and folder has a checkbox for selection
+- **Mixed Selection**: Select any combination of files and folders simultaneously  
+- **Select All**: One-click selection of all visible items
+- **Clear Selection**: Easy deselection of all items
+- **Auto-clear**: Selections automatically clear when navigating between folders
+
+### Advanced Download Capabilities  
+- **Hierarchical Zip Creation**: Preserves original folder structure in downloads
+- **Recursive Processing**: Automatically includes all files within selected folders
+- **Progress Tracking**: Real-time progress bars showing download status
+- **Error Handling**: Continues downloading even if individual files fail
+- **Large File Support**: Handles large folders and file collections efficiently
+
+### Enhanced Navigation
+- **Multi-Drive Support**: Access personal drives, shared drives, and organizational storage
+- **Smart Breadcrumbs**: Click any part of the path to quickly navigate back
+- **Section-based Views**: Dedicated views for recent files, shared content, etc.
+- **Provider-Specific Features**: Google Workspace shared drives, OneDrive for Business
+
 ## Production Deployment
 
 1. Update redirect URIs in OAuth applications to production domains
 2. Set environment variables for production
 3. For Google: Submit app for verification if serving public users
 4. For Microsoft: Consider single vs multi-tenant configuration
+5. Consider implementing server-side token refresh for better security
